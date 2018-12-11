@@ -2,6 +2,7 @@
 
 package volume
 
+
 import (
 	"errors"
 	"os/exec"
@@ -11,6 +12,11 @@ import (
 )
 
 var useAmixer bool
+
+const (
+//	outputdevice string = "Master"
+	outputdevice string = "Speaker" // Modified from Master to Speaker for talkkonnect for raspberry pi
+)
 
 func init() {
 	if _, err := exec.LookPath("pactl"); err != nil {
@@ -24,9 +30,7 @@ func cmdEnv() []string {
 
 func getVolumeCmd() []string {
 	if useAmixer {
-		// Modified From Master to Speaker by Suvir
-		//return []string{"amixer", "get", "Master"}
-		return []string{"amixer", "get", "Speaker"}
+		return []string{"amixer", "get", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -48,9 +52,7 @@ func parseVolume(out string) (int, error) {
 
 func setVolumeCmd(volume int) []string {
 	if useAmixer {
-		// Modified From Master to Speaker by Suvir
-		//return []string{"amixer", "set", "Master", strconv.Itoa(volume) + "%"}
-		return []string{"amixer", "set", "Speaker", strconv.Itoa(volume) + "%"}
+		return []string{"amixer", "set", outputdevice, strconv.Itoa(volume) + "%"}
 	}
 	return []string{"pactl", "set-sink-volume", "0", strconv.Itoa(volume) + "%"}
 }
@@ -64,18 +66,14 @@ func increaseVolumeCmd(diff int) []string {
 		sign = "-"
 	}
 	if useAmixer {
-		// Modified From Master to Speaker by Suvir
-		//return []string{"amixer", "set", "Master", strconv.Itoa(diff) + "%" + sign}
-		return []string{"amixer", "set", "Speaker", strconv.Itoa(diff) + "%" + sign}
+		return []string{"amixer", "set", outputdevice, strconv.Itoa(diff) + "%" + sign}
 	}
 	return []string{"pactl", "--", "set-sink-volume", "0", sign + strconv.Itoa(diff) + "%"}
 }
 
 func getMutedCmd() []string {
 	if useAmixer {
-		// Change Master to Speaker By Suvir Kumar
-		//return []string{"amixer", "get", "Master"}
-		return []string{"amixer", "get", "Speaker"}
+		return []string{"amixer", "get", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -98,17 +96,14 @@ func parseMuted(out string) (bool, error) {
 
 func muteCmd() []string {
 	if useAmixer {
-		// Changed Master to Speaker
-		//return []string{"amixer", "", "", "set", "Speaker", "mute"}
-		return []string{"amixer", "set", "Speaker", "mute"}
+		return []string{"amixer", "set", outputdevice, "mute"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "1"}
 }
 
 func unmuteCmd() []string {
 	if useAmixer {
-		//Changed Master to Speaker
-		return []string{"amixer", "set", "Speaker", "unmute"}
+		return []string{"amixer", "set", outputdevice, "unmute"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "0"}
 }
