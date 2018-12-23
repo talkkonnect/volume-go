@@ -11,11 +11,14 @@ import (
 	"strings"
 )
 
-var useAmixer bool
+var (
+useAmixer bool
+outputdevice string = "Speaker"
+)
 
 const (
 //	outputdevice string = "Master"
-	outputdevice string = "Speaker" // Modified from Master to Speaker for talkkonnect for raspberry pi
+//	outputdevice string = "Speaker" // Modified from Master to Speaker for talkkonnect for raspberry pi
 )
 
 func init() {
@@ -28,7 +31,7 @@ func cmdEnv() []string {
 	return []string{"LANG=C", "LC_ALL=C"}
 }
 
-func getVolumeCmd() []string {
+func getVolumeCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "get", outputdevice}
 	}
@@ -50,14 +53,14 @@ func parseVolume(out string) (int, error) {
 	return 0, errors.New("no volume found")
 }
 
-func setVolumeCmd(volume int) []string {
+func setVolumeCmd(volume int, outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, strconv.Itoa(volume) + "%"}
 	}
 	return []string{"pactl", "set-sink-volume", "0", strconv.Itoa(volume) + "%"}
 }
 
-func increaseVolumeCmd(diff int) []string {
+func increaseVolumeCmd(diff int, outputdevice string) []string {
 	var sign string
 	if diff >= 0 {
 		sign = "+"
@@ -71,7 +74,7 @@ func increaseVolumeCmd(diff int) []string {
 	return []string{"pactl", "--", "set-sink-volume", "0", sign + strconv.Itoa(diff) + "%"}
 }
 
-func getMutedCmd() []string {
+func getMutedCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "get", outputdevice}
 	}
@@ -94,14 +97,14 @@ func parseMuted(out string) (bool, error) {
 	return false, errors.New("no muted information found")
 }
 
-func muteCmd() []string {
+func muteCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, "mute"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "1"}
 }
 
-func unmuteCmd() []string {
+func unmuteCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, "unmute"}
 	}

@@ -21,8 +21,8 @@ func execCmd(cmdArgs []string) ([]byte, error) {
 }
 
 // GetVolume returns the current volume (0 to 100).
-func GetVolume() (int, error) {
-	out, err := execCmd(getVolumeCmd())
+func GetVolume(outputdevice string) (int, error) {
+	out, err := execCmd(getVolumeCmd(outputdevice))
 	if err != nil {
 		return 0, err
 	}
@@ -30,23 +30,23 @@ func GetVolume() (int, error) {
 }
 
 // SetVolume sets the sound volume to the specified value.
-func SetVolume(volume int) error {
+func SetVolume(volume int, outputdevice string) error {
 	if volume < 0 || 100 < volume {
 		return errors.New("out of valid volume range")
 	}
-	_, err := execCmd(setVolumeCmd(volume))
+	_, err := execCmd(setVolumeCmd(volume, outputdevice))
 	return err
 }
 
 // IncreaseVolume increases (or decreases) the audio volume by the specified value.
-func IncreaseVolume(diff int) error {
-	_, err := execCmd(increaseVolumeCmd(diff))
+func IncreaseVolume(diff int, outputdevice string) error {
+	_, err := execCmd(increaseVolumeCmd(diff, outputdevice))
 	return err
 }
 
 // GetMuted returns the current muted status.
-func GetMuted() (bool, error) {
-	out, err := execCmd(getMutedCmd())
+func GetMuted(outputdevice string) (bool, error) {
+	out, err := execCmd(getMutedCmd(outputdevice))
 	if err != nil {
 		return false, err
 	}
@@ -54,13 +54,13 @@ func GetMuted() (bool, error) {
 }
 
 // Mute mutes the audio.
-func Mute() error {
-	_, err := execCmd(muteCmd())
+func Mute(outputdevice string) error {
+	_, err := execCmd(muteCmd(outputdevice))
 	return err
 }
 
 // Unmute unmutes the audio.
-func Unmute() error {
-	_, err := execCmd(unmuteCmd())
+func Unmute(outputdevice string) error {
+	_, err := execCmd(unmuteCmd(outputdevice))
 	return err
 }
