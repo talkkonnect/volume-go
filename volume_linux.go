@@ -2,7 +2,6 @@
 
 package volume
 
-
 import (
 	"errors"
 	"os/exec"
@@ -12,8 +11,7 @@ import (
 )
 
 var (
-useAmixer bool
-outputdevice string = "Speaker"
+	useAmixer bool
 )
 
 const (
@@ -56,6 +54,8 @@ func parseVolume(out string) (int, error) {
 func setVolumeCmd(volume int, outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, strconv.Itoa(volume) + "%"}
+	} else if _, err := strconv.Atoi(outputdevice); err == nil {
+		return []string{"pactl", "set-sink-volume", outputdevice, strconv.Itoa(volume) + "%"}
 	}
 	return []string{"pactl", "set-sink-volume", "0", strconv.Itoa(volume) + "%"}
 }
@@ -70,6 +70,8 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 	}
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, strconv.Itoa(diff) + "%" + sign}
+	} else if _, err := strconv.Atoi(outputdevice); err == nil {
+		return []string{"pactl", "--", "set-sink-volume", outputdevice, sign + strconv.Itoa(diff) + "%"}
 	}
 	return []string{"pactl", "--", "set-sink-volume", "0", sign + strconv.Itoa(diff) + "%"}
 }
@@ -100,6 +102,8 @@ func parseMuted(out string) (bool, error) {
 func muteCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, "mute"}
+	} else if _, err := strconv.Atoi(outputdevice); err == nil {
+		return []string{"pactl", "set-sink-mute", outputdevice, "1"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "1"}
 }
@@ -107,6 +111,8 @@ func muteCmd(outputdevice string) []string {
 func unmuteCmd(outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, "unmute"}
+	} else if _, err := strconv.Atoi(outputdevice); err == nil {
+		return []string{"pactl", "set-sink-mute", outputdevice, "0"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "0"}
 }
