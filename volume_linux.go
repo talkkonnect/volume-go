@@ -78,7 +78,7 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 
 func getMutedCmd(outputdevice string) []string {
 	if useAmixer {
-		return []string{"amixer", "get", outputdevice}
+		return []string{"amixer", "sget", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -87,7 +87,15 @@ func parseMuted(out string) (bool, error) {
 	lines := strings.Split(out, "\n")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, " \t")
-		if useAmixer && strings.Contains(s, "Playback") && strings.Contains(s, "%") ||
+//		if useAmixer && strings.Contains(s, "Playback") && strings.Contains(s, "%") ||
+//			!useAmixer && strings.HasPrefix(s, "Mute: ") {
+//			if strings.Contains(s, "[off]") || strings.Contains(s, "yes") {
+//				return true, nil
+//			} else if strings.Contains(s, "[on]") || strings.Contains(s, "no") {
+//				return false, nil
+//			}
+//		}
+		if useAmixer && strings.Contains(s, "Playback")  ||
 			!useAmixer && strings.HasPrefix(s, "Mute: ") {
 			if strings.Contains(s, "[off]") || strings.Contains(s, "yes") {
 				return true, nil
