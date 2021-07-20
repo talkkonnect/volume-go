@@ -8,28 +8,28 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	origVolume, err := GetVolume()
+	origVolume, err := GetVolume("")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "get volume failed: %+v\n", err)
 		os.Exit(1)
 	}
-	origMuted, err := GetMuted()
+	origMuted, err := GetMuted("")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "get muted failed: %+v\n", err)
 		os.Exit(1)
 	}
 	code := m.Run()
-	_ = SetVolume(origVolume)
+	_ = SetVolume(origVolume, "")
 	if origMuted {
-		_ = Mute()
+		_ = Mute("")
 	} else {
-		_ = Unmute()
+		_ = Unmute("")
 	}
 	os.Exit(code)
 }
 
 func TestGetVolume(t *testing.T) {
-	_, err := GetVolume()
+	_, err := GetVolume("")
 	if err != nil {
 		t.Errorf("get volume failed: %+v", err)
 	}
@@ -37,11 +37,11 @@ func TestGetVolume(t *testing.T) {
 
 func TestSetVolume(t *testing.T) {
 	for _, vol := range []int{0, 37, 54, 20, 10} {
-		err := SetVolume(vol)
+		err := SetVolume(vol, "")
 		if err != nil {
 			t.Errorf("set volume failed: %+v", err)
 		}
-		v, err := GetVolume()
+		v, err := GetVolume("")
 		if err != nil {
 			t.Errorf("get volume failed: %+v", err)
 		}
@@ -58,15 +58,15 @@ func TestSetVolume(t *testing.T) {
 func TestIncreaseVolume(t *testing.T) {
 	vol := 17
 	diff := 3
-	err := SetVolume(vol)
+	err := SetVolume(vol, "")
 	if err != nil {
 		t.Errorf("set volume failed: %+v", err)
 	}
-	err = IncreaseVolume(diff)
+	err = IncreaseVolume(diff, "")
 	if err != nil {
 		t.Errorf("increase volume failed: %+v", err)
 	}
-	v, err := GetVolume()
+	v, err := GetVolume("")
 	if err != nil {
 		t.Errorf("get volume failed: %+v", err)
 	}
@@ -77,11 +77,11 @@ func TestIncreaseVolume(t *testing.T) {
 			t.Logf("increase volume difference (possibly amixer on Linux): (got: %+v, expected: %+v)", v, vol)
 		}
 	}
-	err = IncreaseVolume(-diff)
+	err = IncreaseVolume(-diff, "")
 	if err != nil {
 		t.Errorf("increase volume failed: %+v", err)
 	}
-	v, err = GetVolume()
+	v, err = GetVolume("")
 	if err != nil {
 		t.Errorf("get volume failed: %+v", err)
 	}
@@ -92,11 +92,11 @@ func TestIncreaseVolume(t *testing.T) {
 			t.Logf("increase volume difference (possibly amixer on Linux): (got: %+v, expected: %+v)", v, vol)
 		}
 	}
-	err = IncreaseVolume(-100)
+	err = IncreaseVolume(-100, "")
 	if err != nil {
 		t.Errorf("increase volume failed: %+v", err)
 	}
-	v, err = GetVolume()
+	v, err = GetVolume("")
 	if err != nil {
 		t.Errorf("get volume failed: %+v", err)
 	}
@@ -106,11 +106,11 @@ func TestIncreaseVolume(t *testing.T) {
 }
 
 func TestMute(t *testing.T) {
-	err := Mute()
+	err := Mute("")
 	if err != nil {
 		t.Errorf("mute failed: %+v", err)
 	}
-	muted, err := GetMuted()
+	muted, err := GetMuted("")
 	if err != nil {
 		t.Errorf("get muted failed: %+v", err)
 	}
@@ -120,11 +120,11 @@ func TestMute(t *testing.T) {
 }
 
 func TestUnmute(t *testing.T) {
-	err := Unmute()
+	err := Unmute("")
 	if err != nil {
 		t.Errorf("unmute failed: %+v", err)
 	}
-	muted, err := GetMuted()
+	muted, err := GetMuted("")
 	if err != nil {
 		t.Errorf("get muted failed: %+v", err)
 	}
