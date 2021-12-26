@@ -75,7 +75,7 @@ func parseVolume(out string) (int, error) {
 	lines := strings.Split(out, "\n")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, " \t")
-		if useAmixer && strings.Contains(s, "Front Left:") && strings.Contains(s, "%") ||
+		if useAmixer && strings.Contains(s, "Playback") && strings.Contains(s, "%") ||
 			!useAmixer && strings.HasPrefix(s, "Volume:") {
 			volumeStr := volumePattern.FindString(s)
 			return strconv.Atoi(volumeStr[:len(volumeStr)-1])
