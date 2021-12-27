@@ -9,14 +9,15 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var volumePattern = regexp.MustCompile(`\d+%`)
 var useAmixer bool = true
 
 //Example For CM108 (USB Sound Card)
-var OutputVolDevice string ="Speaker"
-var OutputMuteDevice string = "Speaker"
+var OutputVolDevice string ="Headphone"
+var OutputMuteDevice string = "Headphone"
 var OutputVolRegex string = "Playback"
 
 //Example For WM8960 (RESPEAKER)
@@ -33,6 +34,8 @@ func main() {
 	}
 	fmt.Printf("current volume: %d\n", vol)
 
+	time.Sleep(3 * time.Second)
+
 	var NewVol int = 100
 	if vol < 100 {
 		NewVol = vol + 1
@@ -44,12 +47,16 @@ func main() {
 	}
 	fmt.Printf("set volume success\n")
 
+	time.Sleep(3 * time.Second)
+
 	err = Mute(OutputVolDevice)
 	if err != nil {
 		log.Fatalf("mute failed: %+v", err)
 	} else {
 		log.Println("mute success")
 	}
+
+	time.Sleep(3 * time.Second)
 
 	err = Unmute(OutputVolDevice)
 	if err != nil {

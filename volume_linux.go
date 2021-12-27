@@ -84,22 +84,22 @@ func getMutedCmd(outputdevice string) []string {
 }
 
 func parseMuted(out string) (bool, error) {
-	lines := strings.Split(out, "\n")
+	lines := strings.Split(out, "\t")
 	for _, line := range lines {
-		s := strings.TrimLeft(line, " \t")
-		//		if useAmixer && strings.Contains(s, "Playback") && strings.Contains(s, "%") ||
-		//			!useAmixer && strings.HasPrefix(s, "Mute: ") {
-		//			if strings.Contains(s, "[off]") || strings.Contains(s, "yes") {
-		//				return true, nil
-		//			} else if strings.Contains(s, "[on]") || strings.Contains(s, "no") {
-		//				return false, nil
-		//			}
-		//		}
-		if useAmixer && strings.Contains(s, "Playback") ||
-			!useAmixer && strings.HasPrefix(s, "Mute: ") {
-			if strings.Contains(s, "[off]") || strings.Contains(s, "yes") {
+		s := strings.TrimLeft(line, "\t")
+		if (useAmixer && strings.Contains(s, "Playback")) && (strings.Contains(s, "on") || strings.Contains(s, "off")) {
+			if (strings.Contains(s, "[off]") || strings.Contains(s, "off") ||strings.Contains(s, "yes")) {
 				return true, nil
-			} else if strings.Contains(s, "[on]") || strings.Contains(s, "no") {
+			}
+			if (strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no")) {
+				return false, nil
+			}
+		}
+		if !useAmixer && strings.HasPrefix(s, "Mute: ") {
+			if (strings.Contains(s, "[off]") || strings.Contains(s, "off") ||strings.Contains(s, "yes")) {
+				return true, nil
+			}
+			if (strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no")) {
 				return false, nil
 			}
 		}

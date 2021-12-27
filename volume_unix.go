@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"log"
 )
 
 func execCmd(cmdArgs []string) ([]byte, error) {
@@ -48,6 +49,7 @@ func IncreaseVolume(diff int, outputdevice string) error {
 func GetMuted(outputdevice string) (bool, error) {
 	out, err := execCmd(getMutedCmd(outputdevice))
 	if err != nil {
+		log.Println("error: %v",err)
 		return false, err
 	}
 	return parseMuted(string(out))
