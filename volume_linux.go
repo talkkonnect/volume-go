@@ -5,6 +5,7 @@ package volume
 
 import (
 	"errors"
+	"log"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -32,7 +33,7 @@ func cmdEnv() []string {
 
 func getVolumeCmd(outputdevice string) []string {
 	if useAmixer {
-		return []string{"amixer", "get", outputdevice}
+		return []string{"amixer", "-M", "get", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -40,7 +41,7 @@ func getVolumeCmd(outputdevice string) []string {
 var volumePattern = regexp.MustCompile(`\d+%`)
 
 func parseVolume(out string) (int, error) {
-	lines := strings.Split(out, "\n")
+	lines := strings.Split(out, "\t")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, " \t")
 		if useAmixer && (strings.Contains(s, "Playback") || strings.Contains(s, "Front Left:")) && strings.Contains(s, "%") || !useAmixer && strings.HasPrefix(s, "Volume:") {
@@ -61,19 +62,34 @@ func setVolumeCmd(volume int, outputdevice string) []string {
 }
 
 func increaseVolumeCmd(diff int, outputdevice string) []string {
-	var sign string
+
+	OrigVolume, err := GetVolume(outputdevice)
+	if err != nil {
+		log.Println("error: Cannot Get Volume of Current Output Device")
+		return nil
+	}
+
+	var Sign string
 	if diff >= 0 {
-		sign = "+"
+		Sign = "+"
+		log.Printf("debug: Increasing Volume From %v to %v\n", OrigVolume, OrigVolume+1)
 	} else if useAmixer {
 		diff = -diff
-		sign = "-"
+		Sign = "-"
+		log.Printf("debug: Decreasing Volume From %v to %v\n", OrigVolume, OrigVolume-1)
 	}
+
 	if useAmixer {
-		return []string{"amixer", "set", outputdevice, strconv.Itoa(diff) + "%" + sign}
+		if Sign == "+" {
+			return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume+1) + "%"}
+		}
+		if Sign == "-" {
+			return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume-1) + "%"}
+		}
 	} else if _, err := strconv.Atoi(outputdevice); err == nil {
-		return []string{"pactl", "--", "set-sink-volume", outputdevice, sign + strconv.Itoa(diff) + "%"}
+		return []string{"pactl", "--", "set-sink-volume", outputdevice, Sign + strconv.Itoa(diff) + "%"}
 	}
-	return []string{"pactl", "--", "set-sink-volume", "0", sign + strconv.Itoa(diff) + "%"}
+	return []string{"pactl", "--", "set-sink-volume", "0", Sign + strconv.Itoa(diff) + "%"}
 }
 
 func getMutedCmd(outputdevice string) []string {
@@ -88,18 +104,18 @@ func parseMuted(out string) (bool, error) {
 	for _, line := range lines {
 		s := strings.TrimLeft(line, "\t")
 		if (useAmixer && strings.Contains(s, "Playback")) && (strings.Contains(s, "on") || strings.Contains(s, "off")) {
-			if (strings.Contains(s, "[off]") || strings.Contains(s, "off") ||strings.Contains(s, "yes")) {
+			if strings.Contains(s, "[off]") || strings.Contains(s, "off") || strings.Contains(s, "yes") {
 				return true, nil
 			}
-			if (strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no")) {
+			if strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no") {
 				return false, nil
 			}
 		}
 		if !useAmixer && strings.HasPrefix(s, "Mute: ") {
-			if (strings.Contains(s, "[off]") || strings.Contains(s, "off") ||strings.Contains(s, "yes")) {
+			if strings.Contains(s, "[off]") || strings.Contains(s, "off") || strings.Contains(s, "yes") {
 				return true, nil
 			}
-			if (strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no")) {
+			if strings.Contains(s, "[on]") || strings.Contains(s, "on") || strings.Contains(s, "no") {
 				return false, nil
 			}
 		}
