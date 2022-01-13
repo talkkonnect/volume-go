@@ -71,27 +71,9 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 		return nil
 	}
 
-	var Sign string
-	if diff >= 0 {
-		Sign = "+"
-		log.Printf("debug: Increasing Volume From %v to %v on %v\n", OrigVolume, OrigVolume+2,outputdevice)
-	} else if useAmixer {
-		diff = -diff
-		Sign = "-"
-		log.Printf("debug: Decreasing Volume From %v to %v on %v\n", OrigVolume, OrigVolume-2,outputdevice)
-	}
+	log.Printf("debug: Changing Volume From %v to %v on %v\n", OrigVolume, OrigVolume+diff, outputdevice)
 
-	if useAmixer {
-		if Sign == "+" {
-			return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume+2) + "%"}
-		}
-		if Sign == "-" {
-			return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume-2) + "%"}
-		}
-	} else if _, err := strconv.Atoi(outputdevice); err == nil {
-		return []string{"pactl", "--", "set-sink-volume", outputdevice, Sign + strconv.Itoa(diff) + "%"}
-	}
-	return []string{"pactl", "--", "set-sink-volume", "0", Sign + strconv.Itoa(diff) + "%"}
+	return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume+diff) + "%"}
 }
 
 func getMutedCmd(outputdevice string) []string {
