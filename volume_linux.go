@@ -33,7 +33,7 @@ func cmdEnv() []string {
 
 func getVolumeCmd(outputdevice string) []string {
 	if useAmixer {
-		return []string{"amixer", "-R", "get", outputdevice}
+		return []string{"amixer", "-M", "get", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -70,18 +70,17 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 		return nil
 	}
 
-	if OrigVolume+diff >= 100 {
-		log.Printf("debug: Changing Volume From %v to %v on %v (max rounding)\n", 100, outputdevice)
-		return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(100) + "%"}
+	if diff > 0 {
+		log.Printf("debug: Changing Volume From %v increase by %v step on %v\n", OrigVolume, diff, outputdevice)
+		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "%+"}
 	}
 
-	if OrigVolume+diff <= 0 {
-		log.Printf("debug: Changing Volume From %v to %v on %v (min rounding)\n", OrigVolume, 0, outputdevice)
-		return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(0) + "%"}
+	if diff < 0 {
+		log.Printf("debug: Changing Volume From %v decrease by %v step on %v\n", OrigVolume, diff, outputdevice)
+		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "%-"}
 	}
 
-	log.Printf("debug: Changing Volume From %v to %v on %v (no rounding)\n", OrigVolume, OrigVolume+diff, outputdevice)
-	return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(OrigVolume+diff) + "%"}
+	return nil
 }
 
 func getMutedCmd(outputdevice string) []string {
@@ -131,4 +130,11 @@ func unmuteCmd(outputdevice string) []string {
 		return []string{"pactl", "set-sink-mute", outputdevice, "0"}
 	}
 	return []string{"pactl", "set-sink-mute", "0", "0"}
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
