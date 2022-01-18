@@ -71,13 +71,13 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 	}
 
 	if diff > 0 {
-		log.Printf("debug: Changing Volume From %v increase by %v step on %v\n", OrigVolume, diff, outputdevice)
-		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "%+"}
+		log.Printf("debug: Changing Volume From %v increase by %v dB step on %v\n", OrigVolume, diff, outputdevice)
+		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "db+"}
 	}
 
 	if diff < 0 {
-		log.Printf("debug: Changing Volume From %v decrease by %v step on %v\n", OrigVolume, diff, outputdevice)
-		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "%-"}
+		log.Printf("debug: Changing Volume From %v decrease by %v dB step on %v\n", OrigVolume, diff, outputdevice)
+		return []string{"amixer", "sset", "-q", outputdevice, strconv.Itoa(abs(diff)) + "db-"}
 	}
 
 	return nil
