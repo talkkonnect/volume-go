@@ -62,7 +62,6 @@ func setVolumeCmd(volume int, outputdevice string) []string {
 }
 
 func increaseVolumeCmd(diff int, outputdevice string) []string {
-	log.Print("alert: Tracepoint 1")
 	var OrigVolume int
 	var err error
 	OrigVolume, err = GetVolume(outputdevice)
