@@ -33,7 +33,7 @@ func cmdEnv() []string {
 
 func getVolumeCmd(outputdevice string) []string {
 	if useAmixer {
-		return []string{"amixer", "-M", "get", outputdevice}
+		return []string{"amixer", "-R", "get", outputdevice}
 	}
 	return []string{"pactl", "list", "sinks"}
 }
@@ -72,16 +72,16 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 
 	if OrigVolume+diff >= 100 {
 		log.Printf("debug: Changing Volume From %v to %v on %v (max rounding)\n", 100, outputdevice)
-		return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(100) + "%"}
+		return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(100) + "%"}
 	}
 
 	if OrigVolume+diff <= 0 {
 		log.Printf("debug: Changing Volume From %v to %v on %v (min rounding)\n", OrigVolume, 0, outputdevice)
-		return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(0) + "%"}
+		return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(0) + "%"}
 	}
 
 	log.Printf("debug: Changing Volume From %v to %v on %v (no rounding)\n", OrigVolume, OrigVolume+diff, outputdevice)
-	return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume+diff) + "%"}
+	return []string{"amixer", "sset", "-R", outputdevice, strconv.Itoa(OrigVolume+diff) + "%"}
 }
 
 func getMutedCmd(outputdevice string) []string {
