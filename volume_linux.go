@@ -62,7 +62,7 @@ func setVolumeCmd(volume int, outputdevice string) []string {
 }
 
 func increaseVolumeCmd(diff int, outputdevice string) []string {
-
+	log.Print("alert: Tracepoint 1")
 	var OrigVolume int
 	var err error
 	OrigVolume, err = GetVolume(outputdevice)
@@ -71,8 +71,17 @@ func increaseVolumeCmd(diff int, outputdevice string) []string {
 		return nil
 	}
 
-	log.Printf("debug: Changing Volume From %v to %v on %v\n", OrigVolume, OrigVolume+diff, outputdevice)
+	if OrigVolume+diff >= 100 {
+		log.Printf("debug: Changing Volume From %v to %v on %v (max rounding)\n", 100, outputdevice)
+		return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(100) + "%"}
+	}
 
+	if OrigVolume+diff <= 0 {
+		log.Printf("debug: Changing Volume From %v to %v on %v (min rounding)\n", OrigVolume, 0, outputdevice)
+		return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(0) + "%"}
+	}
+
+	log.Printf("debug: Changing Volume From %v to %v on %v (no rounding)\n", OrigVolume, OrigVolume+diff, outputdevice)
 	return []string{"amixer", "sset", "-M", outputdevice, strconv.Itoa(OrigVolume+diff) + "%"}
 }
 
