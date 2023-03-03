@@ -10,7 +10,7 @@ func cmdEnv() []string {
 	return nil
 }
 
-func getVolumeCmd() []string {
+func getVolumeCmd(outputdevice string) []string {
 	return []string{"osascript", "-e", "output volume of (get volume settings)"}
 }
 
@@ -22,15 +22,15 @@ func parseVolume(out string) (int, error) {
 	return strconv.Atoi(out)
 }
 
-func setVolumeCmd(volume int) []string {
+func setVolumeCmd(volume int, outputdevice string) []string {
 	return []string{"osascript", "-e", "set volume output volume " + strconv.Itoa(volume)}
 }
 
-func increaseVolumeCmd(diff int) []string {
+func increaseVolumeCmd(diff int, outputdevice string) []string {
 	return []string{"osascript", "-e", "set volume output volume ((output volume of (get volume settings)) + " + strconv.Itoa(diff) + ")"}
 }
 
-func getMutedCmd() []string {
+func getMutedCmd(outputdevice string) []string {
 	return []string{"osascript", "-e", "output muted of (get volume settings)"}
 }
 
@@ -44,10 +44,10 @@ func parseMuted(out string) (bool, error) {
 	return false, fmt.Errorf("unknown muted status: %s", out)
 }
 
-func muteCmd() []string {
+func muteCmd(outputdevice string) []string {
 	return []string{"osascript", "-e", "set volume output muted true"}
 }
 
-func unmuteCmd() []string {
+func unmuteCmd(outputdevice string) []string {
 	return []string{"osascript", "-e", "set volume output muted false"}
 }
