@@ -52,6 +52,18 @@ func parseRXVolume(out string) (int, error) {
 	return 0, errors.New("no volume found")
 }
 
+func parseTXVolume(in string) (int, error) {
+	lines := strings.Split(in, "\t")
+	for _, line := range lines {
+		s := strings.TrimLeft(line, " \t")
+		if useAmixer && (strings.Contains(s, "Capture") {
+			volumeStr := volumePattern.FindString(s)
+			return strconv.Atoi(volumeStr[:len(volumeStr)-1])
+		}
+	}
+	return 0, errors.New("no volume found")
+}
+
 func setVolumeCmd(volume int, outputdevice string) []string {
 	if useAmixer {
 		return []string{"amixer", "set", outputdevice, strconv.Itoa(volume) + "%"}
