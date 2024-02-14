@@ -28,7 +28,7 @@ func GetVolume(outputdevice string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return parseVolume(string(out))
+	return parseRXVolume(string(out))
 }
 
 // SetVolume sets the sound volume to the specified value.
@@ -53,7 +53,7 @@ func GetMuted(outputdevice string) (bool, error) {
 		log.Printf("error: %v", err)
 		return false, err
 	}
-	return parseMuted(string(out))
+	return parseRXMuted(string(out))
 }
 
 // Mute mutes the audio.
