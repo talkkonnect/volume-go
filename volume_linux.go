@@ -40,7 +40,7 @@ func getVolumeCmd(outputdevice string) []string {
 
 var volumePattern = regexp.MustCompile(`\d+%`)
 
-func parseVolume(out string) (int, error) {
+func parseRXVolume(out string) (int, error) {
 	lines := strings.Split(out, "\t")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, " \t")
@@ -90,7 +90,7 @@ func getMutedCmd(outputdevice string) []string {
 	return []string{"pactl", "list", "sinks"}
 }
 
-func parseMuted(out string) (bool, error) {
+func parseRXMuted(out string) (bool, error) {
 	lines := strings.Split(out, "\t")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, "\t")
