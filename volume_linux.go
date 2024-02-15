@@ -56,7 +56,7 @@ func parseTXVolume(in string) (int, error) {
 	lines := strings.Split(in, "\t")
 	for _, line := range lines {
 		s := strings.TrimLeft(line, " \t")
-		if useAmixer && (strings.Contains(s, "Capture") {
+		if useAmixer && (strings.Contains(s, "Capture")) {
 			volumeStr := volumePattern.FindString(s)
 			return strconv.Atoi(volumeStr[:len(volumeStr)-1])
 		}
